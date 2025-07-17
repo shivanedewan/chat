@@ -1,0 +1,20 @@
+by default it should show summarizer. when in summarizer mode disable the input bar to take any text and it just takes the file input and
+and sends that to backend
+
+when these tools are there and when you click on any one of them the screen should show the respective tool you are using. i.e change the
+ui accordingly to show the respective tool
+in src/app/page.tsx change the prompts according to the tools. i.e like write tool name and what this tool can do and when you click on one prompt take the user to the respective tool
+
+this is the flow suppose I select a particular tool like code then I have to make a POST request at url/submit_task
+this endpoint is same for all the tools
+I have to send the body in post request which is like { task_id: "summary", query:"can be blank" , file: "file which is uploaded"}
+if tool is code or grammer then there will be a query body otherwise it can be empty
+
+this endpoint will return me a json response {"job_id","status": "accepted or rejected"}
+
+
+
+in @page.tsx change the default prompts to this Grammar Correction: Check grammar/spelling and improve writing style
+Code Assistant: Debug code and explain code functionality
+File OCR: Extract text from documents and convert images to text
+Paraphraser: Rephrase text and simplify complex text

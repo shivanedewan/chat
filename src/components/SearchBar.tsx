@@ -7,10 +7,11 @@ interface SearchBarProps {
   onSendMessage: (message: string) => void;
   onFileUpload: (file: File) => Promise<void>;
   onToolSelect?: (tool: { id: number; name: string; icon: string }) => void;
+  currentTool?: { id: number; name: string; icon: string } | null;
   disabled?: boolean;
 }
 
-const SearchBar = ({ onSendMessage, onFileUpload, onToolSelect, disabled = false }: SearchBarProps) => {
+const SearchBar = ({ onSendMessage, onFileUpload, onToolSelect, currentTool, disabled = false }: SearchBarProps) => {
   const [message, setMessage] = useState('');
   const [isToolsOpen, setIsToolsOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -22,6 +23,7 @@ const SearchBar = ({ onSendMessage, onFileUpload, onToolSelect, disabled = false
     { id: 2, name: 'Code Assistant', icon: '💻' },
     { id: 3, name: 'File OCR', icon: '📄' },
     { id: 4, name: 'Paraphraser', icon: '🔄' },
+    { id: 5, name: 'Summarizer', icon: '📋' },
   ];
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,10 +135,16 @@ const SearchBar = ({ onSendMessage, onFileUpload, onToolSelect, disabled = false
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder={selectedFile ? "Add a message (optional)..." : "Message ChatGPT..."}
+            placeholder={
+              currentTool?.id === 5
+                ? "Attach file to get summary"
+                : selectedFile 
+                  ? "Add a message (optional)..." 
+                  : "Message ChatGPT..."
+            }
             className="flex-1 p-3 resize-none border-none outline-none text-gray-900 placeholder-gray-500 min-h-[20px] max-h-32 disabled:bg-gray-50"
             rows={1}
-            disabled={disabled}
+            disabled={disabled || (currentTool?.id === 5)}
           />
 
           {/* Tools Dropdown */}

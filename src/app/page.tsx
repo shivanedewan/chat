@@ -6,10 +6,43 @@ import SearchBar from '@/components/SearchBar';
 import Sidebar from '@/components/Sidebar';
 import ChatMessage from '@/components/ChatMessage';
 import { useConversations } from '@/hooks/useConversations';
+import { useEffect, useRef } from 'react';
 
 export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [selectedTool, setSelectedTool] = useState<{ id: number; name: string; icon: string } | null>(null);
+  const [isToolsDropdownOpen, setIsToolsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [selectedTool, setSelectedTool] = useState<{ id: number; name: string; icon: string } | null>({
+    id: 5,
+    name: 'Summarizer',
+    icon: '📋',
+  });
+
+  const tools = [
+    { id: 1, name: 'Grammar Correction', icon: '📝' },
+    { id: 2, name: 'Code Assistant', icon: '💻' },
+    { id: 3, name: 'File OCR', icon: '📄' },
+    { id: 4, name: 'Paraphraser', icon: '🔄' },
+    { id: 5, name: 'Summarizer', icon: '📋' },
+  ];
+
+  // Handle clicking outside dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsToolsDropdownOpen(false);
+      }
+    };
+
+    if (isToolsDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isToolsDropdownOpen]);
+
   const {
     conversations,
     currentConversationId,
@@ -116,11 +149,38 @@ export default function Home() {
               <h1 className="text-xl font-semibold text-gray-900">ChatGPT</h1>
             </div>
             <div className="flex items-center gap-4">
-              <button className="text-gray-500 hover:text-gray-700 transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                </svg>
-              </button>
+              <div className="relative">
+                <button 
+                  onClick={() => setIsToolsDropdownOpen(!isToolsDropdownOpen)}
+                  className="text-gray-500 hover:text-gray-700 transition-colors p-2 rounded-md hover:bg-gray-100"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                  </svg>
+                </button>
+
+                {/* Tools Dropdown */}
+                {isToolsDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-10" ref={dropdownRef}>
+                    <div className="p-2">
+                      <div className="text-xs font-medium text-gray-500 px-3 py-1">Tools</div>
+                      {tools.map((tool) => (
+                        <button
+                          key={tool.id}
+                          onClick={() => {
+                            setSelectedTool(tool);
+                            setIsToolsDropdownOpen(false);
+                          }}
+                          className="w-full text-left px-3 py-2 bg-gray-50 rounded-md flex items-center gap-3 transition-colors"
+                        >
+                          <span className="text-lg">{tool.icon}</span>
+                          <span className="text-sm text-gray-700">{tool.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </header>
@@ -222,6 +282,24 @@ export default function Home() {
                       </div>
                     </>
                   )}
+                  {selectedTool.id === 5 && (
+                    <>
+                      <div 
+                        className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors"
+                        onClick={() => handleSendMessage("Upload a document to get a summary")}
+                      >
+                        <h3 className="font-medium text-gray-900 mb-2">Upload document for summary</h3>
+                        <p className="text-sm text-gray-600">Upload PDF, DOC, or text files to get a summary</p>
+                      </div>
+                      <div 
+                        className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors"
+                        onClick={() => handleSendMessage("Extract key points from document")}
+                      >
+                        <h3 className="font-medium text-gray-900 mb-2">Extract key points</h3>
+                        <p className="text-sm text-gray-600">Get the main points and important information</p>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
 
@@ -275,6 +353,7 @@ export default function Home() {
           onFileUpload={handleFileUpload}
           onToolSelect={handleToolSelect}
           disabled={false}
+          currentTool={selectedTool}
         />
       </div>
     </div>
