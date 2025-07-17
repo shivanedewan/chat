@@ -9,6 +9,7 @@ import { useConversations } from '@/hooks/useConversations';
 
 export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [selectedTool, setSelectedTool] = useState<{ id: number; name: string; icon: string } | null>(null);
   const {
     conversations,
     currentConversationId,
@@ -78,6 +79,10 @@ export default function Home() {
     setIsSidebarOpen(false);
   };
 
+  const handleToolSelect = (tool: { id: number; name: string; icon: string }) => {
+    setSelectedTool(tool);
+  };
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -131,41 +136,128 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">How can I help you today?</h2>
-                <p className="text-gray-600">I'm here to assist you with any questions or tasks you might have.</p>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  {selectedTool ? `${selectedTool.name} Tool` : 'How can I help you today?'}
+                </h2>
+                <p className="text-gray-600">
+                  {selectedTool 
+                    ? `You're using the ${selectedTool.name} tool. Click on the tools icon to switch tools.`
+                    : 'Click on the tools icon near the bottom right corner to select different tools available.'
+                  }
+                </p>
               </div>
 
-              {/* Example Prompts */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                <div 
-                  className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors"
-                  onClick={() => handleSendMessage("Write a professional email")}
-                >
-                  <h3 className="font-medium text-gray-900 mb-2">Write a professional email</h3>
-                  <p className="text-sm text-gray-600">Draft a business email for any purpose</p>
+              {/* Tool-specific prompts */}
+              {selectedTool && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                  {selectedTool.id === 1 && (
+                    <>
+                      <div 
+                        className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors"
+                        onClick={() => handleSendMessage("Check grammar and spelling in this text: [Your text here]")}
+                      >
+                        <h3 className="font-medium text-gray-900 mb-2">Check grammar and spelling</h3>
+                        <p className="text-sm text-gray-600">Paste your text to get grammar corrections</p>
+                      </div>
+                      <div 
+                        className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors"
+                        onClick={() => handleSendMessage("Improve the writing style of this text: [Your text here]")}
+                      >
+                        <h3 className="font-medium text-gray-900 mb-2">Improve writing style</h3>
+                        <p className="text-sm text-gray-600">Make your writing more professional and clear</p>
+                      </div>
+                    </>
+                  )}
+                  {selectedTool.id === 2 && (
+                    <>
+                      <div 
+                        className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors"
+                        onClick={() => handleSendMessage("Debug this code: [Your code here]")}
+                      >
+                        <h3 className="font-medium text-gray-900 mb-2">Debug code</h3>
+                        <p className="text-sm text-gray-600">Find and fix errors in your code</p>
+                      </div>
+                      <div 
+                        className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors"
+                        onClick={() => handleSendMessage("Explain this code: [Your code here]")}
+                      >
+                        <h3 className="font-medium text-gray-900 mb-2">Explain code</h3>
+                        <p className="text-sm text-gray-600">Detailed explanation of code functionality</p>
+                      </div>
+                    </>
+                  )}
+                  {selectedTool.id === 3 && (
+                    <>
+                      <div 
+                        className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors"
+                        onClick={() => handleSendMessage("Extract text from this document")}
+                      >
+                        <h3 className="font-medium text-gray-900 mb-2">Extract text from document</h3>
+                        <p className="text-sm text-gray-600">Upload a document to extract readable text</p>
+                      </div>
+                      <div 
+                        className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors"
+                        onClick={() => handleSendMessage("Convert image to text")}
+                      >
+                        <h3 className="font-medium text-gray-900 mb-2">Convert image to text</h3>
+                        <p className="text-sm text-gray-600">Upload an image to extract text content</p>
+                      </div>
+                    </>
+                  )}
+                  {selectedTool.id === 4 && (
+                    <>
+                      <div 
+                        className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors"
+                        onClick={() => handleSendMessage("Rephrase this text: [Your text here]")}
+                      >
+                        <h3 className="font-medium text-gray-900 mb-2">Rephrase text</h3>
+                        <p className="text-sm text-gray-600">Rewrite text while keeping the same meaning</p>
+                      </div>
+                      <div 
+                        className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors"
+                        onClick={() => handleSendMessage("Simplify this text: [Your text here]")}
+                      >
+                        <h3 className="font-medium text-gray-900 mb-2">Simplify text</h3>
+                        <p className="text-sm text-gray-600">Make complex text easier to understand</p>
+                      </div>
+                    </>
+                  )}
                 </div>
-                <div 
-                  className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors"
-                  onClick={() => handleSendMessage("Explain a complex topic")}
-                >
-                  <h3 className="font-medium text-gray-900 mb-2">Explain a complex topic</h3>
-                  <p className="text-sm text-gray-600">Get a simple explanation of any concept</p>
+              )}
+
+              {/* Default prompts when no tool is selected */}
+              {!selectedTool && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                  <div 
+                    className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors"
+                    onClick={() => handleSendMessage("Write a professional email")}
+                  >
+                    <h3 className="font-medium text-gray-900 mb-2">Write a professional email</h3>
+                    <p className="text-sm text-gray-600">Draft a business email for any purpose</p>
+                  </div>
+                  <div 
+                    className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors"
+                    onClick={() => handleSendMessage("Explain a complex topic")}
+                  >
+                    <h3 className="font-medium text-gray-900 mb-2">Explain a complex topic</h3>
+                    <p className="text-sm text-gray-600">Get a simple explanation of any concept</p>
+                  </div>
+                  <div 
+                    className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors"
+                    onClick={() => handleSendMessage("Help with code")}
+                  >
+                    <h3 className="font-medium text-gray-900 mb-2">Help with code</h3>
+                    <p className="text-sm text-gray-600">Debug, explain, or write code</p>
+                  </div>
+                  <div 
+                    className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors"
+                    onClick={() => handleSendMessage("Creative writing")}
+                  >
+                    <h3 className="font-medium text-gray-900 mb-2">Creative writing</h3>
+                    <p className="text-sm text-gray-600">Stories, poems, or creative content</p>
+                  </div>
                 </div>
-                <div 
-                  className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors"
-                  onClick={() => handleSendMessage("Help with code")}
-                >
-                  <h3 className="font-medium text-gray-900 mb-2">Help with code</h3>
-                  <p className="text-sm text-gray-600">Debug, explain, or write code</p>
-                </div>
-                <div 
-                  className="bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors"
-                  onClick={() => handleSendMessage("Creative writing")}
-                >
-                  <h3 className="font-medium text-gray-900 mb-2">Creative writing</h3>
-                  <p className="text-sm text-gray-600">Stories, poems, or creative content</p>
-                </div>
-              </div>
+              )}
             </div>
           ) : (
             // Chat Messages
@@ -181,6 +273,7 @@ export default function Home() {
         <SearchBar
           onSendMessage={handleSendMessage}
           onFileUpload={handleFileUpload}
+          onToolSelect={handleToolSelect}
           disabled={false}
         />
       </div>

@@ -2,15 +2,15 @@
 
 import { useState, useRef } from 'react';
 import { Paperclip, Send, ChevronDown, Sparkles, X } from 'lucide-react';
-import { Message } from './Sidebar';
 
 interface SearchBarProps {
   onSendMessage: (message: string) => void;
   onFileUpload: (file: File) => Promise<void>;
+  onToolSelect?: (tool: { id: number; name: string; icon: string }) => void;
   disabled?: boolean;
 }
 
-const SearchBar = ({ onSendMessage, onFileUpload, disabled = false }: SearchBarProps) => {
+const SearchBar = ({ onSendMessage, onFileUpload, onToolSelect, disabled = false }: SearchBarProps) => {
   const [message, setMessage] = useState('');
   const [isToolsOpen, setIsToolsOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -18,10 +18,10 @@ const SearchBar = ({ onSendMessage, onFileUpload, disabled = false }: SearchBarP
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const tools = [
-    { id: 1, name: 'Make Summary', icon: '📝' },
-    { id: 2, name: 'Generate Report', icon: '📊' },
-    { id: 3, name: 'Generate EIS', icon: '📋' },
-    { id: 4, name: 'Analyze Data', icon: '📈' },
+    { id: 1, name: 'Grammar Correction', icon: '📝' },
+    { id: 2, name: 'Code Assistant', icon: '💻' },
+    { id: 3, name: 'File OCR', icon: '📄' },
+    { id: 4, name: 'Paraphraser', icon: '🔄' },
   ];
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -159,7 +159,9 @@ const SearchBar = ({ onSendMessage, onFileUpload, disabled = false }: SearchBarP
                     <button
                       key={tool.id}
                       onClick={() => {
-                        console.log('Selected tool:', tool.name);
+                        if (onToolSelect) {
+                          onToolSelect(tool);
+                        }
                         setIsToolsOpen(false);
                       }}
                       className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded-md flex items-center gap-3 transition-colors"
